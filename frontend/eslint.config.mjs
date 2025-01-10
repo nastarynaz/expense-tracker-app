@@ -1,31 +1,21 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "@typescript-eslint/eslint-plugin";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
-const config = [
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
-    files: ["**/*.{js,mjs,cjs,ts,tsx}"],
-    languageOptions: {
-      globals: globals.browser,
+    rules: {
+      "no-unused-vars": "off",
     },
-    ...pluginJs.configs.recommended,
-    ...tseslint.configs.recommended,
   },
 ];
 
-const compat = new FlatCompat({
-  // import.meta.dirname is available after Node.js v20.11.0
-  baseDirectory: import.meta.dirname,
-});
-
-const nextJsConfig = compat.config({
-  extends: ["next"],
-  rules: {
-    "react/no-unescaped-entities": "off",
-    "@next/next/no-page-custom-font": "off",
-  },
-});
-
-export default [...config, ...nextJsConfig];
+export default eslintConfig;
